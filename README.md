@@ -12,7 +12,7 @@ Unfortunately API Monitor is not aware of the AccentPolicy structure used by Set
 
 ![API Monitor](http://i.imgur.com/jQJRaTJ.png)
 
-This simple tool when pointed to the dump of the hex buffer will write the correct values to the command prompt.
+This simple tool when pointed to a dump of the hex buffer will write the correct values to the command prompt.
 
 ### Usage
 
