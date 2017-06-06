@@ -25,3 +25,23 @@ This simple tool when pointed to a dump of the hex buffer will write the correct
     Bin2AccentPolicy.exe [filename]
 
 If filename is ignored, it will default to `dump.bin` in the current directory.
+
+## [ColorDumper](https://github.com/TranslucentTB/Tools/blob/master/ColorDumper.cs)
+
+Dumps all the colors accessible by the undocumented functions in `uxtheme.dll` to the command prompt:
+
+    C:\Users\Charles\Git\Tools>ColorDumper.exe
+    ApplicationBackground - FF000000
+    ApplicationBackgroundDarkTheme - FF000000
+    ApplicationBackgroundLightTheme - FFFFFFFF
+    ApplicationText - FFFFFFFF
+    ApplicationTextDarkTheme - FFFFFFFF
+    ApplicationTextLightTheme - FF000000
+    BootBackground - FFB26720
+    BootConfirmationButton - DED6B147
+    BootConfirmationButtonBackgroundDisabled - 0
+    BootConfirmationButtonBackgroundHover - FFCF9454
+    BootConfirmationButtonBackgroundPressed - FFFFFFFF
+    BootConfirmationButtonBackgroundRest - FFB26720
+    BootConfirmationButtonBorderDisabled - FFE0C2A6
+    etc...
