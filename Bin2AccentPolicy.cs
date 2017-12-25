@@ -10,7 +10,8 @@ public class Bin2AccentPolicy
 		ACCENT_ENABLE_GRADIENT = 1,
 		ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
 		ACCENT_ENABLE_BLURBEHIND = 3,
-		ACCENT_INVALID_STATE = 4
+		ACCENT_ENABLE_FLUENT = 4,
+		ACCENT_INVALID_STATE = 5
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -36,34 +37,38 @@ public class Bin2AccentPolicy
 				dumpFile = "dump.bin";
 			}
 
-			byte[] dumpedPolicy = new byte[16];
+			int size = Marshal.SizeOf<AccentPolicy>();
+
+			byte[] dumpedPolicy = new byte[size];
 			using (FileStream dumpStream = File.OpenRead(dumpFile))
 			{
-				if (dumpStream.Length != 16)
+				if (dumpStream.Length != size)
 				{
 					throw new InvalidDataException();
 				}
 				else
 				{
-					dumpStream.Read(dumpedPolicy, 0, 16);
+					dumpStream.Read(dumpedPolicy, 0, size);
 				}
 			}
 
-			IntPtr rawPolicy = Marshal.AllocHGlobal(16);
-			Marshal.Copy(dumpedPolicy, 0, rawPolicy, 16);
-			var finalPolicy = (AccentPolicy)Marshal.PtrToStructure(rawPolicy, (new AccentPolicy{}).GetType());
+			IntPtr rawPolicy = Marshal.AllocHGlobal(size);
+			Marshal.Copy(dumpedPolicy, 0, rawPolicy, size);
+			var finalPolicy = Marshal.PtrToStructure<AccentPolicy>(rawPolicy);
 			Marshal.FreeHGlobal(rawPolicy);
 
-			Console.WriteLine("Accent State   - " + finalPolicy.AccentState.ToString());
-			Console.WriteLine("Accent Flags   - " + finalPolicy.AccentFlags.ToString());
+			Console.WriteLine("Accent State   - " + finalPolicy.AccentState);
+			Console.WriteLine("Accent Flags   - " + finalPolicy.AccentFlags);
 			Console.WriteLine("Gradient Color - 0x" + finalPolicy.GradientColor.ToString("X"));
-			Console.WriteLine("Animation Id   - " + finalPolicy.AnimationId.ToString());
+			Console.WriteLine("Animation Id   - " + finalPolicy.AnimationId);
 
 			return 0;
 		}
 		catch (Exception error)
 		{
+			Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine(error.Message);
+			Console.ResetColor();
 			return 1;
 		}
 	}
