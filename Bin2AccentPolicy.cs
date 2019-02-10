@@ -2,72 +2,56 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-public class Bin2AccentPolicy
+class Bin2AccentPolicy
 {
-	internal enum AccentState
+	enum ACCENT_STATE : int
 	{
 		ACCENT_DISABLED = 0,
 		ACCENT_ENABLE_GRADIENT = 1,
 		ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
 		ACCENT_ENABLE_BLURBEHIND = 3,
-		ACCENT_ENABLE_FLUENT = 4,
-		ACCENT_INVALID_STATE = 5
+		ACCENT_ENABLE_ACRYLICBLURBEHIND = 4,
+		ACCENT_ENABLE_HOSTBACKDROP = 5,
+		ACCENT_INVALID_STATE = 6
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct AccentPolicy
+	struct ACCENT_POLICY
 	{
-		public AccentState AccentState;
-		public int AccentFlags;
-		public int GradientColor;
+		public ACCENT_STATE AccentState;
+		public uint AccentFlags;
+		public uint GradientColor;
 		public int AnimationId;
 	}
 
-	public static int Main(string[] Arguments)
+	unsafe static int Main(string[] args)
 	{
 		try
 		{
-			string dumpFile;
-			if (Arguments.Length > 0)
+			byte *array = stackalloc byte[sizeof(ACCENT_POLICY)];
+			using (var stream = File.OpenRead(args.Length > 0 ? args[0] : "dump.bin"))
 			{
-				dumpFile = Arguments[0];
-			}
-			else
-			{
-				dumpFile = "dump.bin";
-			}
-
-			int size = Marshal.SizeOf<AccentPolicy>();
-
-			byte[] dumpedPolicy = new byte[size];
-			using (FileStream dumpStream = File.OpenRead(dumpFile))
-			{
-				if (dumpStream.Length != size)
+				if (stream.Length != sizeof(ACCENT_POLICY))
 				{
 					throw new InvalidDataException();
 				}
-				else
-				{
-					dumpStream.Read(dumpedPolicy, 0, size);
-				}
+
+				stream.CopyTo(new UnmanagedMemoryStream(array, 0, sizeof(ACCENT_POLICY), FileAccess.Write));
 			}
 
-			IntPtr rawPolicy = Marshal.AllocHGlobal(size);
-			Marshal.Copy(dumpedPolicy, 0, rawPolicy, size);
-			var finalPolicy = Marshal.PtrToStructure<AccentPolicy>(rawPolicy);
-			Marshal.FreeHGlobal(rawPolicy);
+			ACCENT_POLICY *policy = (ACCENT_POLICY *)array;
 
-			Console.WriteLine("Accent State   - " + finalPolicy.AccentState);
-			Console.WriteLine("Accent Flags   - " + finalPolicy.AccentFlags);
-			Console.WriteLine("Gradient Color - 0x" + finalPolicy.GradientColor.ToString("X"));
-			Console.WriteLine("Animation Id   - " + finalPolicy.AnimationId);
+			Console.WriteLine("Accent State:   {0}", policy->AccentState);
+			Console.WriteLine("Accent Flags:   {0}", policy->AccentFlags);
+			Console.WriteLine("Gradient Color: 0x{0:X}", policy->GradientColor.ToString("X"));
+			Console.WriteLine("Animation Id:   {0}", policy->AnimationId);
 
 			return 0;
 		}
-		catch (Exception error)
+		catch (Exception exc)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
-			Console.WriteLine(error.Message);
+			Console.WriteLine(exc.Message);
 			Console.ResetColor();
 			return 1;
 		}

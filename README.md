@@ -4,7 +4,7 @@ These are some various tools used to reverse engineer some functions and API cal
 
 Compile them with the built-in C# compiler of the .NET Framework:
 
-    C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe [filename]
+    C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /unsafe [filename]
 
 ## [Bin2AccentPolicy](https://github.com/TranslucentTB/Tools/blob/master/Bin2AccentPolicy.cs)
 
